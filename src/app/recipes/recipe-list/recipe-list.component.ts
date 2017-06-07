@@ -9,6 +9,8 @@ import { RecipeService } from '../recipe.service';
 })
 export class RecipeListComponent implements OnInit {
   recipes: Recipe[];
+  // currentIndex: number;
+
 
   constructor(private recipeService: RecipeService) { }
 
