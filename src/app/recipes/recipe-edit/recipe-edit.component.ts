@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 
 import { RecipeService } from '../recipe.service';
@@ -15,7 +15,8 @@ export class RecipeEditComponent implements OnInit {
   recipeForm: FormGroup
 
   constructor(private route: ActivatedRoute,
-              private recipeService: RecipeService) { }
+              private recipeService: RecipeService,
+              private router: Router) { }
 
   ngOnInit() {
     this.route.params
@@ -29,7 +30,17 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.recipeForm);
+      // const newRecipe = new Recipe(
+      //   this.recipeForm.value['name'],
+      //   this.recipeForm.value['description'],
+      //   this.recipeForm.value['imagePath'],
+      //   this.recipeForm.value['ingredients']);
+      if (this.editMode) {
+        this.recipeService.updateRecipe(this.id, this.recipeForm.value);  // <-- you can do it this way if the values you are receiving are the exact object that the new Recipe needs. Check section 16 lecture 215 @3:50 for this info
+      } else {
+        this.recipeService.addRecipe(this.recipeForm.value);
+      }
+      this.onCancel();
   }
 
   onAddIngredient() {
@@ -42,6 +53,14 @@ export class RecipeEditComponent implements OnInit {
           ])
       })
     )
+  }
+
+  onDeleteIngredient(index: number) {
+    (<FormArray>this.recipeForm.get('ingredients')).removeAt(index)    // <--- must be casted sense we need it to be FormArray
+  }
+
+  onCancel() {
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 
   private initForm() {
